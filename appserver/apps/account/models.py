@@ -6,7 +6,7 @@ from sqlalchemy_utc import UtcDateTime
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from appserver.apps.calendar.models import Calendar
+    from appserver.apps.calendar.models import Calendar, Booking
 
 class User(SQLModel, table=True):
     __tablename__ = "users"
@@ -26,6 +26,8 @@ class User(SQLModel, table=True):
         back_populates="host",
         sa_relationship_kwargs={"uselist": False, "single_parent": True},
     )
+
+    bookings: list["Booking"] = Relationship(back_populates="guest")
 
     created_at: AwareDatetime = Field(
         default=None,
