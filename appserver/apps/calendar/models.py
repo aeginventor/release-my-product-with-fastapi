@@ -1,8 +1,8 @@
-from datetime import timezone, datetime
+from datetime import date, time, timezone, datetime
 from typing import TYPE_CHECKING
 from pydantic import AwareDatetime
 from sqlalchemy_utc import UtcDateTime
-from sqlmodel import SQLModel, Field, Relationship, Text, JSON, func
+from sqlmodel import SQLModel, Field, Relationship, Text, JSON, func, String, Column
 from sqlalchemy.dialects.postgresql import JSONB
 
 if TYPE_CHECKING:
@@ -23,6 +23,40 @@ class Calendar(SQLModel, table=True):
         back_populates="calendar",
         sa_relationship_kwargs={"uselist": False, "single_parent": True},
         )
+
+    time_slots: list["TimeSlot"] = Relationship(back_populates="calendar")    
+
+    created_at: AwareDatetime = Field(
+        defualt=None,
+        nullable=False,
+        sa_type=UtcDateTime,
+        sa_column_kwargs={
+            "server_default": func.now(),
+        },
+    )
+    updated_at: AwareDatetime = Field(
+        default=None,
+        nullable=False,
+        sa_type=UtcDateTime,
+        sa_column_kwargs={
+            "server_default": func.now(),
+            "onupdate": lambda: datetime.now(timezone.utc),
+        },
+    )
+
+class TimeSlot(SQLModel, table=True):
+    __tablename__ = "time_slots"
+
+    id: int = Field(default=None, primary_key=True)
+    start_time: time
+    end_time: time
+    weekdays: list[int] = Field(
+        sa_type=JSON().with_variant(JSONB(astext_type=Text()), "postgresql"),
+        decription="예약 가능한 요일들"
+    )
+
+    calendar_id: int = Field(foreign_key="calendars.id")
+    calendar: Calendar = Relationship(back_populates="time_slots")
 
     created_at: AwareDatetime = Field(
         defualt=None,
