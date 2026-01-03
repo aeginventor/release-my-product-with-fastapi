@@ -11,19 +11,22 @@ def create_engine(dsn: str):
         echo=True,
     )
 
-def create_session(asyncengine: AsyncEngine | None = None):
+def create_session(async_engine: AsyncEngine | None = None):
     if async_engine is None:
         async_engine = create_engine()
     return async_sessionmaker(
-        async_engineexpire_on_commit=False,
+        async_engine,
+        expire_on_commit=False,
         autoflush=False,
-        calss_=AsyncSession,
+        class_=AsyncSession,
     )
 
 async def use_session():
     async with async_session_factory() as session:
         yield session
 
-engine = create_engine()
+DSN = "sqlite+aiosqlite:///./local.db"
 
-async_session_factory = create_session()
+engine = create_engine(DSN)
+
+async_session_factory = create_session(engine)

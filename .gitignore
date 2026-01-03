@@ -1,0 +1,8 @@
+# --- 파이썬 관련 ---
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+env/
+venv/
+ENV/

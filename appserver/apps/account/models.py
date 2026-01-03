@@ -15,7 +15,7 @@ class User(SQLModel, table=True):
     )
 
     id: int = Field(default=None, primary_key=True)
-    username: str = Field(unique=True, max_length=40, decription="사용자 계정 ID")
+    username: str = Field(unique=True, max_length=40, description="사용자 계정 ID")
     email: EmailStr = Field(max_length=128, description="사용자 이메일")
     display_name: str = Field(max_length=40, description="사용자 표시 이름")
     password: str = Field(max_length=28, description="사용자 비밀번호")
@@ -57,12 +57,12 @@ class OAuthAccount(SQLModel, table=True):
         ),
     )
 
-    id: int = Field(default=None, priamry_key=True)
+    id: int = Field(default=None, primary_key=True)
 
-    provider: str = Field(max_length=10, decription="OAuth 제공자")
-    provider_account_id: str = Field(max_length=128, decription="OAuth 제공자 계정 ID")
+    provider: str = Field(max_length=10, description="OAuth 제공자")
+    provider_account_id: str = Field(max_length=128, description="OAuth 제공자 계정 ID")
 
-    user_id: int = Field(foreign_key="user.id")
+    user_id: int = Field(foreign_key="users.id")
     user: User = Relationship(back_populates="oauth_accounts")
 
     created_at: AwareDatetime = Field(
